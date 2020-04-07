@@ -23,10 +23,10 @@ for place in places:
 #         continue
 #     print(media.owner)
 # while pointer:
-#     medias, pointer = agent.get_media(Location(COUNTRYS['united states']), pointer=pointer, delay=1, count=10)
-#     for media in medias:
-#         try:
-#             comments = anonym_agent.get_comments(media)
-#         except Exception as ex:
-#             continue
+# #     medias, pointer = agent.get_media(Location(COUNTRYS['united states']), pointer=pointer, delay=1, count=10)
+# #     for media in medias:
+# #         try:
+# #             comments = anonym_agent.get_comments(media)
+# #         except Exception as ex:
+# #             continue
 #         print(media.owner)
