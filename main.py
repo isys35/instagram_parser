@@ -37,7 +37,7 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def get_data(self):
         if self.parser.agent:
             index = self.locations[self.comboBox.currentText()]
-            min_folowers = int(self.lineEdit_3.text())
+            min_folowers = int(self.lineEdit_4.text())
             self.threadparser = ThreadGetData(self, index, min_folowers)
             self.threadparser.start()
             self.lineEdit_3.setEnabled(False)
@@ -60,13 +60,12 @@ class ThreadGetData(QThread):
 
     def run(self):
         try:
-            self.parser.window = self.window
+            self.window.parser.window = self.window
             self.window.parser.min_folowers_locations = self.min_folowers
             self.window.parser.get_data(self.index)
         except Exception as ex:
             print(ex)
             print(traceback.format_exc())
-
 
 
 def main():
