@@ -12,8 +12,9 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.setupUi(self)
         self.pushButton.clicked.connect(self.auth)
         self.pushButton_2.clicked.connect(self.find_locations)
-        self.pushButton_3.clicked.connect(self.get_data)
+        self.pushButton_3.clicked.connect(self.get_data_location)
         self.pushButton_8.clicked.connect(self.find_tags)
+        self.pushButton_9.clicked.connect(self.get_data_tags)
         self.parser = InstaParser()
         self.locations = None
         self.tags = None
@@ -43,7 +44,7 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.comboBox_4.clear()
             self.comboBox_4.addItems(self.tags)
 
-    def get_data(self):
+    def get_data_location(self):
         if self.parser.agent:
             index = self.locations[self.comboBox.currentText()]
             min_folowers = int(self.lineEdit_4.text())
@@ -59,6 +60,14 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.label_4.setEnabled(False)
             self.label_5.setEnabled(False)
 
+    def get_data_tags(self):
+        if self.parser.agent:
+            tag = self.comboBox_4.currentText()
+            min_folowers = int(self.lineEdit_10.text())
+            print(tag, min_folowers)
+            self.threadparser = ThreadGetDataTags(self, tag, min_folowers)
+            self.threadparser.start()
+
 
 class ThreadGetData(QThread):
     def __init__(self, window, index, min_folowers):
@@ -66,12 +75,24 @@ class ThreadGetData(QThread):
         self.min_folowers = min_folowers
         self.window = window
         self.index = index
+        self.window.parser.window = self.window
+        self.window.parser.min_folowers = self.min_folowers
 
     def run(self):
         try:
-            self.window.parser.window = self.window
-            self.window.parser.min_folowers_locations = self.min_folowers
-            self.window.parser.get_data(self.index)
+            self.window.parser.get_data_locations(self.index)
+        except Exception as ex:
+            print(ex)
+            print(traceback.format_exc())
+
+
+class ThreadGetDataTags(ThreadGetData):
+    def __init__(self, window, index, min_folowers):
+        super().__init__(window, index, min_folowers)
+
+    def run(self):
+        try:
+            self.window.parser.get_data_tags(self.index)
         except Exception as ex:
             print(ex)
             print(traceback.format_exc())
@@ -82,6 +103,7 @@ def main():
     window = MainApp()
     window.show()
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
