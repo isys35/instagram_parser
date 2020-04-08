@@ -13,8 +13,10 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.pushButton.clicked.connect(self.auth)
         self.pushButton_2.clicked.connect(self.find_locations)
         self.pushButton_3.clicked.connect(self.get_data)
+        self.pushButton_8.clicked.connect(self.find_tags)
         self.parser = InstaParser()
         self.locations = None
+        self.tags = None
         self.threadparser = None
 
     def auth(self):
@@ -33,6 +35,13 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.label_3.setText('Найдено локаций: ' + str(len(self.locations)))
             self.comboBox.clear()
             self.comboBox.addItems(self.locations)
+
+    def find_tags(self):
+        if self.parser.agent:
+            self.tags = self.parser.find_tags(self.lineEdit_9.text())
+            self.label_15.setText('Найдено локаций: ' + str(len(self.tags)))
+            self.comboBox_4.clear()
+            self.comboBox_4.addItems(self.tags)
 
     def get_data(self):
         if self.parser.agent:

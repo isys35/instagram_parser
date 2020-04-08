@@ -33,6 +33,18 @@ class InstaParser:
             places_dict[place['place']['location']['name']] = place['place']['location']['pk']
         return places_dict
 
+    def find_tags(self, tag):
+        url = f'https://www.instagram.com/web/search/topsearch/?context=blended&query={quote(tag)}&rank_token=0.84235424&include_reel=true'
+        print(url)
+        resp = self.agent.get_request(url)
+        json_resp = resp.json()
+        hashtags = json_resp['hashtags']
+        print(hashtags)
+        hashtags_dict = {}
+        for hashtag in hashtags:
+            hashtags_dict[hashtag['hashtag']['name']] = hashtag['hashtag']['id']
+        return hashtags_dict
+
     def get_media_info(self, media):
         anonym_agent = WebAgent()
         try:
@@ -78,5 +90,7 @@ class InstaParser:
 
 if __name__ == '__main__':
     parser = InstaParser()
-    parser.auth('domimod1', 'a31081993')
-    parser.find_locations('Москва')
+    parser.auth('bears_bobruisk', 'a31081993abc')
+    tags = parser.find_tags('#москва')
+    print(tags)
+
