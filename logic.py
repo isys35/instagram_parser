@@ -25,11 +25,9 @@ class InstaParser:
 
     def find_locations(self, location):
         url = f'https://www.instagram.com/web/search/topsearch/?context=blended&query={quote(location)}&rank_token=0.043242&include_reel=true'
-        print(url)
         resp = self.agent.get_request(url)
         json_resp = resp.json()
         places = json_resp['places']
-        print(places)
         places_dict = {}
         for place in places:
             places_dict[place['place']['location']['name']] = place['place']['location']['pk']
@@ -37,11 +35,9 @@ class InstaParser:
 
     def find_tags(self, tag):
         url = f'https://www.instagram.com/web/search/topsearch/?context=blended&query={quote(tag)}&rank_token=0.84235424&include_reel=true'
-        print(url)
         resp = self.agent.get_request(url)
         json_resp = resp.json()
         hashtags = json_resp['hashtags']
-        print(hashtags)
         hashtags_dict = {}
         for hashtag in hashtags:
             hashtags_dict[hashtag['hashtag']['name']] = hashtag['hashtag']['id']
@@ -62,7 +58,14 @@ class InstaParser:
         followers = account.followers_count
         if int(followers) < self.min_folowers:
             return
-        return account_name, followers
+        biography = account.biography
+        splited_biography = biography.replace('\n', ' ').split(' ')
+        emails = []
+        for el in splited_biography:
+            if '@' in el:
+                emails.append(el)
+        data = [account_name, followers] + emails
+        return tuple(data)
 
     # есть повторяющиеся части, разбить на методы
     def get_data_locations(self, index):
@@ -125,7 +128,7 @@ class InstaParser:
 
 if __name__ == '__main__':
     parser = InstaParser()
-    parser.auth('bears_bobruisk', 'a31081993abc')
-    tags = parser.get_data_tags('москва')
+    parser.auth('sacakae', 'a31081993')
+    tags = parser.get_data_tags('сша')
 
 
