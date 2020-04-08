@@ -63,7 +63,7 @@ class InstaParser:
         emails = []
         for el in splited_biography:
             if '@' in el:
-                emails.append(el)
+                emails.append(str(el))
         data = [account_name, followers] + emails
         return tuple(data)
 
@@ -95,7 +95,6 @@ class InstaParser:
 
     def get_data_tags(self, tag):
         tag = Tag(tag)
-        print(tag.base_url)
         db.create_file(self.tags_file)
         medias, pointer = self.agent.get_media(tag, count=100, delay=1)
         for media in medias:
