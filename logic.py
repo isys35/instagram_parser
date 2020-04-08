@@ -13,6 +13,7 @@ class InstaParser:
         self.window = None
         self.locations_file = 'locations.csv'
         self.tags_file = 'tags.csv'
+        self.parsed_data = []
 
     def auth(self, login, password):
         try:
@@ -91,34 +92,40 @@ class InstaParser:
 
     def get_data_tags(self, tag):
         tag = Tag(tag)
+        print(tag.base_url)
         db.create_file(self.tags_file)
-        medias, pointer = self.agent.get_media(tag, count=10, delay=1)
+        medias, pointer = self.agent.get_media(tag, count=100, delay=1)
         for media in medias:
             data = self.get_media_info(media)
             print(data)
             if not data:
                 continue
+            if data in self.parsed_data:
+                continue
             db.add_data(self.tags_file, data)
             self.data_location_count += 1
+            self.parsed_data.append(data)
             if self.window:
                 self.window.label_18.setText('Добавлено аккаунтов ' + str(self.data_location_count))
         while pointer:
-            medias, pointer = self.agent.get_media(tag, pointer=pointer, count=10, delay=1)
+            medias, pointer = self.agent.get_media(tag, pointer=pointer, count=100, delay=1)
             for media in medias:
                 data = self.get_media_info(media)
                 print(data)
                 if not data:
                     continue
+                if data in self.parsed_data:
+                    continue
                 db.add_data(self.locations_file, data)
                 self.data_location_count += 1
+                self.parsed_data.append(data)
                 if self.window:
                     self.window.label_18.setText('Добавлено аккаунтов ' + str(self.data_location_count))
-
 
 
 if __name__ == '__main__':
     parser = InstaParser()
     parser.auth('bears_bobruisk', 'a31081993abc')
-    tags = parser.find_tags('#москва')
-    print(tags)
+    tags = parser.get_data_tags('москва')
+
 

@@ -44,21 +44,32 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.comboBox_4.clear()
             self.comboBox_4.addItems(self.tags)
 
+    def widget_off(self):
+        self.lineEdit_3.setEnabled(False)
+        self.lineEdit_2.setEnabled(False)
+        self.lineEdit_4.setEnabled(False)
+        self.pushButton_2.setEnabled(False)
+        self.pushButton_3.setEnabled(False)
+        self.comboBox.setEnabled(False)
+        self.label_3.setEnabled(False)
+        self.label_4.setEnabled(False)
+        self.label_5.setEnabled(False)
+        self.lineEdit_9.setEnabled(False)
+        self.lineEdit_10.setEnabled(False)
+        self.pushButton_9.setEnabled(False)
+        self.pushButton_8.setEnabled(False)
+        self.comboBox_4.setEnabled(False)
+        self.label_15.setEnabled(False)
+        self.label_16.setEnabled(False)
+        self.label_17.setEnabled(False)
+
     def get_data_location(self):
         if self.parser.agent:
             index = self.locations[self.comboBox.currentText()]
             min_folowers = int(self.lineEdit_4.text())
             self.threadparser = ThreadGetData(self, index, min_folowers)
             self.threadparser.start()
-            self.lineEdit_3.setEnabled(False)
-            self.lineEdit_2.setEnabled(False)
-            self.lineEdit_4.setEnabled(False)
-            self.pushButton_2.setEnabled(False)
-            self.pushButton_3.setEnabled(False)
-            self.comboBox.setEnabled(False)
-            self.label_3.setEnabled(False)
-            self.label_4.setEnabled(False)
-            self.label_5.setEnabled(False)
+            self.widget_off()
 
     def get_data_tags(self):
         if self.parser.agent:
@@ -67,6 +78,7 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             print(tag, min_folowers)
             self.threadparser = ThreadGetDataTags(self, tag, min_folowers)
             self.threadparser.start()
+            self.widget_off()
 
 
 class ThreadGetData(QThread):
