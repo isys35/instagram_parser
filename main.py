@@ -1,7 +1,9 @@
 from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import QThread
 import mainwindow
 import sys
 from logic import InstaParser
+import traceback
 
 
 class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
@@ -13,10 +15,13 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.pushButton_3.clicked.connect(self.get_data)
         self.parser = InstaParser()
         self.locations = None
+        self.threadparser = None
 
     def auth(self):
         self.parser.auth(self.lineEdit.text(), self.lineEdit_2.text())
         if self.parser.agent:
+            self.label.setEnabled(False)
+            self.label_2.setEnabled(False)
             self.lineEdit.setEnabled(False)
             self.lineEdit_2.setEnabled(False)
             self.pushButton.setEnabled(False)
@@ -32,8 +37,35 @@ class MainApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def get_data(self):
         if self.parser.agent:
             index = self.locations[self.comboBox.currentText()]
-            self.parser.get_data(index)
+            min_folowers = int(self.lineEdit_3.text())
+            self.threadparser = ThreadGetData(self, index, min_folowers)
+            self.threadparser.start()
+            self.lineEdit_3.setEnabled(False)
+            self.lineEdit_2.setEnabled(False)
+            self.lineEdit_4.setEnabled(False)
+            self.pushButton_2.setEnabled(False)
+            self.pushButton_3.setEnabled(False)
+            self.comboBox.setEnabled(False)
+            self.label_3.setEnabled(False)
+            self.label_4.setEnabled(False)
+            self.label_5.setEnabled(False)
 
+
+class ThreadGetData(QThread):
+    def __init__(self, window, index, min_folowers):
+        super().__init__()
+        self.min_folowers = min_folowers
+        self.window = window
+        self.index = index
+
+    def run(self):
+        try:
+            self.parser.window = self.window
+            self.window.parser.min_folowers_locations = self.min_folowers
+            self.window.parser.get_data(self.index)
+        except Exception as ex:
+            print(ex)
+            print(traceback.format_exc())
 
 
 

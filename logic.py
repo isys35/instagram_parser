@@ -6,6 +6,9 @@ from urllib.parse import quote
 class InstaParser:
     def __init__(self):
         self.agent = None
+        self.min_folowers_locations = 0
+        self.data_location_count = 0
+        self.window = None
 
     def auth(self, login, password):
         try:
@@ -27,7 +30,7 @@ class InstaParser:
             places_dict[place['place']['location']['name']] = place['place']['location']['pk']
         return places_dict
 
-    def get_media_info(self,media):
+    def get_media_info(self, media):
         anonym_agent = WebAgent()
         try:
             anonym_agent.get_comments(media)
@@ -37,25 +40,29 @@ class InstaParser:
         account = Account(media.owner)
         self.agent.get_followers(account=Account(media.owner), count=1, delay=1)
         followers = account.followers_count
+        if int(followers) < self.min_folowers_locations:
+            return
         return account_name, followers
 
     def get_data(self, index):
-        medias, pointer = self.agent.get_media(Location(index), delay=1, count=10)
-        all_data = []
+        medias, pointer = self.agent.get_media(Location(index), count=10, delay=1)
         for media in medias:
             data = self.get_media_info(media)
             print(data)
-            all_data.append(data)
+            if not data:
+                continue
+            self.data_location_count += 1
+            if self.window:
+                self.window.label_6.setText('Добавлено аккаунтов ' + str(self.data_location_count))
         while pointer:
-            medias, pointer = self.agent.get_media(Location(index), pointer=pointer, delay=1, count=10)
+            medias, pointer = self.agent.get_media(Location(index), pointer=pointer, count=10, delay=1)
             for media in medias:
                 data = self.get_media_info(media)
-                print(data)
-                all_data.append(data)
-
-
-
-
+                if not data:
+                    continue
+                self.data_location_count += 1
+                if self.window:
+                    self.window.label_6.setText('Добавлено аккаунтов ' + str(self.data_location_count))
 
 if __name__ == '__main__':
     parser = InstaParser()
